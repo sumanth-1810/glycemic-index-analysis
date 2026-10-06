@@ -33,6 +33,8 @@ An interactive dashboard (`app/dashboard.py`) lets you search and filter every f
 
 Only Supplemental Table 1 is used. Its values meet ISO 26642:2010 methods; the lower-quality values in Table 2 are left out.
 
+The supplement PDFs are copyrighted, so they are not included in this repository. The parsed table in `data/processed/` is all the notebook and dashboard need. To re-run the parser, download Supplemental Table 1 from the article page ([doi:10.1093/ajcn/nqab233](https://doi.org/10.1093/ajcn/nqab233)) and save it as `data/raw/atkinson2021_supplemental_table1.pdf`. The USDA archive is public domain and is included.
+
 ## Method
 
 1. **Parse** (`src/parse_gi_table.py`). The PDF table is rebuilt from text coordinates and font styles. Bold lines mark food groups and subgroups, and wrapped lines are re-attached to their food row. The output is `data/processed/gi_table1.csv`.
@@ -51,6 +53,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
+# optional: rebuild the processed data (needs the supplement PDF, see Data)
 python src/parse_gi_table.py   # also runs the processing labels
 python src/match_usda.py
 jupyter nbconvert --to notebook --execute --inplace notebooks/glycemic_index_analysis.ipynb
@@ -72,12 +75,12 @@ The dashboard opens at http://localhost:8501 and has five tabs:
 | Carbohydrate type | Plot GI against starch, sugar, fiber or glucose-yielding share for the 94 matched USDA foods |
 | Glycemic load | See how food groups reorder from GI to GL, and calculate the GL of your own portion of any food |
 
-To host it publicly, connect the GitHub repository to [Streamlit Community Cloud](https://streamlit.io/cloud) and set the main file to `app/dashboard.py`.
+To host it publicly, connect the GitHub repository to [Streamlit Community Cloud](https://share.streamlit.io) and set the main file to `app/dashboard.py`. Streamlit Cloud installs the lighter `app/requirements.txt`, which skips the notebook tooling.
 
 ## Repository layout
 
 ```
-data/raw/          source PDFs and the USDA SR Legacy archive
+data/raw/          USDA SR Legacy archive (GI supplement PDFs go here, not included)
 data/processed/    parsed GI table, USDA matches, review list
 src/               parsing, labeling, matching and analysis helpers
 notebooks/         the report

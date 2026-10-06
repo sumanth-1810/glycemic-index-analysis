@@ -555,6 +555,11 @@ def summarize(records: list[dict[str, str]]) -> str:
 
 
 def main() -> None:
+    if not DEFAULT_PDF.exists():
+        raise SystemExit(
+            f"Missing {DEFAULT_PDF.relative_to(ROOT)}. Download Supplemental Table 1 of "
+            "Atkinson et al. 2021 (doi:10.1093/ajcn/nqab233) and save it under that name."
+        )
     records = parse_table()
     write_csv(records)
     print(summarize(records))
