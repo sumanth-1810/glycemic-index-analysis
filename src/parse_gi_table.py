@@ -434,7 +434,67 @@ def parse_table(pdf_path: Path = DEFAULT_PDF) -> list[dict[str, str]]:
                 continue
     for record in records:
         record.pop("_emitted", None)
+    _repair_split_words(records)
     return records
+
+
+REPAIR_FIELDS = ("food_name", "food_subgroup", "country", "reference_food")
+WORD = r"[A-Za-zÀ-ÿ]+"
+# Genuine two-word names that the rule below would otherwise join.
+KEEP_SPLIT = {("pan", "e")}
+
+
+def _repair_split_words(records: list[dict[str, str]]) -> None:
+    """Rejoin words the PDF text layer split in two ("Foxta il" -> "Foxtail").
+
+    A pair is joined when the joined word occurs elsewhere in the table and
+    either fragment is not itself a word there. Two real words ("Pine apple")
+    are joined only when the joined form is common and the split pair is rare,
+    so ordinary phrases such as "sweet corn" are left alone.
+    """
+    counts: dict[str, int] = {}
+    pairs: dict[tuple[str, str], int] = {}
+    for record in records:
+        for field in REPAIR_FIELDS:
+            words = re.findall(WORD, record.get(field, ""))
+            for word in words:
+                counts[word.lower()] = counts.get(word.lower(), 0) + 1
+            for left, right in zip(words, words[1:]):
+                key = (left.lower(), right.lower())
+                pairs[key] = pairs.get(key, 0) + 1
+
+    def is_word(word: str) -> bool:
+        return counts.get(word.lower(), 0) >= 2
+
+    def should_join(left: str, right: str) -> bool:
+        if (left.lower(), right.lower()) in KEEP_SPLIT:
+            return False
+        joined = (left + right).lower()
+        seen = counts.get(joined, 0)
+        if seen < 1:
+            return False
+        fragments = [part for part in (left, right) if not is_word(part)]
+        if fragments:
+            # A long unknown fragment may just be a rare word, so the joined
+            # form must be seen at least twice.
+            return min(len(part) for part in fragments) <= 3 or seen >= 2
+        return counts.get(joined, 0) >= 3 and pairs.get((left.lower(), right.lower()), 0) == 1
+
+    pair = re.compile(rf"\b({WORD}) ({WORD})\b")
+    for record in records:
+        for field in REPAIR_FIELDS:
+            value = record.get(field, "")
+            position = 0
+            while True:
+                match = pair.search(value, position)
+                if match is None:
+                    break
+                if should_join(match.group(1), match.group(2)):
+                    value = value[: match.start()] + match.group(1) + match.group(2) + value[match.end() :]
+                    position = match.start()
+                else:
+                    position = match.start(2)
+            record[field] = value
 
 
 def _finalize(record: dict[str, str]) -> dict[str, str]:
