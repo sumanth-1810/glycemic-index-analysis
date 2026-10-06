@@ -4,7 +4,7 @@ How do food group, processing method and carbohydrate type relate to a food's gl
 
 This project parses the 2021 international GI tables (2,091 foods measured to the ISO 26642:2010 standard), labels how each food was processed, and links foods to USDA carbohydrate composition, then tests four hypotheses. The full report is in [`notebooks/glycemic_index_analysis.ipynb`](notebooks/glycemic_index_analysis.ipynb).
 
-An interactive dashboard (`app/dashboard.py`) lets you search and filter every food and explore each analysis. See [Interactive dashboard](#interactive-dashboard).
+**Live dashboard: [glycemic-index.streamlit.app](https://glycemic-index.streamlit.app)**. Search and filter every food and explore each analysis interactively (source in `app/dashboard.py`, details under [Interactive dashboard](#interactive-dashboard)).
 
 ## Key findings
 
@@ -75,7 +75,7 @@ The dashboard opens at http://localhost:8501 and has five tabs:
 | Carbohydrate type | Plot GI against starch, sugar, fiber or glucose-yielding share for the 94 matched USDA foods |
 | Glycemic load | See how food groups reorder from GI to GL, and calculate the GL of your own portion of any food |
 
-To host it publicly, connect the GitHub repository to [Streamlit Community Cloud](https://share.streamlit.io) and set the main file to `app/dashboard.py`. Streamlit Cloud installs the lighter `app/requirements.txt`, which skips the notebook tooling.
+It is hosted at [glycemic-index.streamlit.app](https://glycemic-index.streamlit.app). To host your own copy, connect the GitHub repository to [Streamlit Community Cloud](https://share.streamlit.io) and set the main file to `app/dashboard.py`. Streamlit Cloud installs the lighter `app/requirements.txt`, which skips the notebook tooling.
 
 ## Repository layout
 
