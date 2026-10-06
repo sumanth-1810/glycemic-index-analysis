@@ -41,6 +41,12 @@ NUTRIENTS = {
     "1009": "starch_measured_g",
     "2000": "sugars_g",
     "1079": "fiber_g",
+    "1010": "sucrose_g",
+    "1011": "glucose_g",
+    "1012": "fructose_g",
+    "1013": "lactose_g",
+    "1014": "maltose_g",
+    "1075": "galactose_g",
 }
 
 GROUP_CATEGORIES = {
@@ -382,7 +388,12 @@ def carbohydrate_profile(candidate: dict) -> dict[str, str]:
     def share(value: float) -> str:
         return f"{value / carb:.4f}" if carb > 0 else ""
 
+    sugar_values = {
+        f"usda_{name}_g": f"{candidate[name + '_g']:.2f}" if name + "_g" in candidate else ""
+        for name in SUGAR_NAMES
+    }
     return {
+        **sugar_values,
         "usda_carb_g": f"{carb:.2f}",
         "usda_sugars_g": f"{sugars:.2f}",
         "usda_fiber_g": f"{fiber:.2f}",
@@ -393,6 +404,8 @@ def carbohydrate_profile(candidate: dict) -> dict[str, str]:
         "starch_share": share(starch),
     }
 
+
+SUGAR_NAMES = ("glucose", "fructose", "sucrose", "lactose", "maltose", "galactose")
 
 FIELDNAMES = [
     "food_number",
@@ -413,6 +426,7 @@ FIELDNAMES = [
     "sugar_share",
     "fiber_share",
     "starch_share",
+    *(f"usda_{name}_g" for name in SUGAR_NAMES),
 ]
 
 

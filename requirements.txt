@@ -1,1 +1,10 @@
 pypdf>=5
+pandas>=2.2
+numpy>=1.26
+scipy>=1.13
+statsmodels>=0.14
+matplotlib>=3.8
+seaborn>=0.13
+jupyter>=1.0
+nbconvert>=7
+ipykernel>=6

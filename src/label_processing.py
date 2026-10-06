@@ -87,9 +87,13 @@ def label_food(name: str, subgroup: str = "") -> tuple[str, str]:
     from_name = label_text(name)
     if from_name:
         return from_name, "name"
-    from_subgroup = label_text(subgroup)
-    if from_subgroup:
-        return from_subgroup, "subgroup"
+    if re.search(r"\bmethod NS\b", name, flags=re.IGNORECASE):
+        return "", ""
+    # A heading like "Sweet potato, cooked" or "Peaches, raw or canned" does not
+    # say how a given food in that section was prepared.
+    heading = re.sub(r"\bcooked\b", "", subgroup, flags=re.IGNORECASE)
+    if len({label for _, label in _matches(heading.lower())}) == 1:
+        return label_text(heading), "subgroup"
     return "", ""
 
 
@@ -155,6 +159,12 @@ def _check_examples() -> None:
     got, source = label_food("Basmati rice (Dreamrice, Singapore)", "Basmati, white rice, boiled")
     if (got, source) != ("boiled", "subgroup"):
         raise AssertionError((got, source))
+    for name, subgroup in (
+        ("Sweet potato, kumara, cooking method NS", "Sweet potato/Kumara, cooked"),
+        ("Yellow Peach", "Peaches, raw or canned"),
+    ):
+        if label_food(name, subgroup) != ("", ""):
+            raise AssertionError((name, label_food(name, subgroup)))
 
 
 def main() -> None:
