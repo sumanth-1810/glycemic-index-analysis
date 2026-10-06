@@ -8,3 +8,5 @@ seaborn>=0.13
 jupyter>=1.0
 nbconvert>=7
 ipykernel>=6
+streamlit>=1.40
+plotly>=5.24

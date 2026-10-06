@@ -4,6 +4,8 @@ How do food group, processing method and carbohydrate type relate to a food's gl
 
 This project parses the 2021 international GI tables (2,091 foods measured to the ISO 26642:2010 standard), labels how each food was processed, and links foods to USDA carbohydrate composition, then tests four hypotheses. The full report is in [`notebooks/glycemic_index_analysis.ipynb`](notebooks/glycemic_index_analysis.ipynb).
 
+An interactive dashboard (`app/dashboard.py`) lets you search and filter every food and explore each analysis. See [Interactive dashboard](#interactive-dashboard).
+
 ## Key findings
 
 **1. Food group matters a lot.** GI differs strongly between the 20 food groups (Kruskal–Wallis p ≈ 10⁻¹²⁷, ε² = 0.32), and 86 of 190 group pairs differ after Holm correction. Legumes, dairy and nuts are reliably low GI; starchy vegetables, breads and refined grains are reliably high.
@@ -54,6 +56,24 @@ python src/match_usda.py
 jupyter nbconvert --to notebook --execute --inplace notebooks/glycemic_index_analysis.ipynb
 ```
 
+## Interactive dashboard
+
+```bash
+streamlit run app/dashboard.py
+```
+
+The dashboard opens at http://localhost:8501 and has five tabs:
+
+| Tab | What you can do |
+|---|---|
+| Food explorer | Search and filter all 2,091 foods by name, group, GI band, processing method, country and GI range; hover any point for details |
+| Food groups | GI by group with every food shown, the Kruskal–Wallis result and a Dunn pairwise heatmap, all recomputed for the current filter |
+| Processing | Pick potato, sweet potato, rice or oats to compare cooking methods against boiling; sweet potato adds the matched ten-cultivar experiment |
+| Carbohydrate type | Plot GI against starch, sugar, fiber or glucose-yielding share for the 94 matched USDA foods |
+| Glycemic load | See how food groups reorder from GI to GL, and calculate the GL of your own portion of any food |
+
+To host it publicly, connect the GitHub repository to [Streamlit Community Cloud](https://streamlit.io/cloud) and set the main file to `app/dashboard.py`.
+
 ## Repository layout
 
 ```
@@ -61,6 +81,7 @@ data/raw/          source PDFs and the USDA SR Legacy archive
 data/processed/    parsed GI table, USDA matches, review list
 src/               parsing, labeling, matching and analysis helpers
 notebooks/         the report
+app/               interactive Streamlit dashboard
 figures/           charts exported by the notebook
 ```
 
